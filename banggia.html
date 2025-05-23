@@ -1,143 +1,1468 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MebBookingBTL - Đặt lịch khám bệnh</title>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <!-- Font Awesome CSS cục bộ -->
-    <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <!-- Font Awesome CSS để sử dụng biểu tượng kính lúp -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="main.css">
-    <link rel="icon" href="image/x-icon">
-    <img src="banggia.jpg" style ="width: 100%; height: auto; display: block;" >
-</head>
-<body>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>MedBookingBTL - Bảng Giá Dịch Vụ Khám Bệnh</title>
+    <meta name="description"
+        content="So sánh bảng giá dịch vụ y tế giữa Bệnh viện Phương Đông và Phòng khám 5 Sao Hà Nội. Đặt lịch khám bệnh trực tuyến dễ dàng.">
+    <meta name="keywords"
+        content="bảng giá khám bệnh, đặt lịch khám bệnh, bệnh viện phương đông, phòng khám 5 sao, dịch vụ y tế">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    </noscript>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/registerUser.js"></script>
+    <script src="/db.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        secondary: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-        <style>
-            /* Tuỳ chỉnh màu nền pastel */
-            .header-custom {
-                background-color: #cce5ff; /* Xanh dương pastel */
+        :root {
+            --header-height: 80px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply antialiased text-gray-800 bg-gray-50;
+        }
+
+        .dropdown-menu {
+            transform: translateY(5px);
+            transition: all 0.2s ease;
+        }
+
+        .group:hover .dropdown-menu {
+            transform: translateY(0);
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .dropdown-icon {
+            transition: transform 0.2s ease;
+        }
+
+        .dropdown.active .dropdown-icon {
+            transform: rotate(180deg);
+        }
+
+        .dropdown.active .dropdown-content {
+            display: block !important;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            transition: all 0.3s ease;
+        }
+
+        .sticky-header.scrolled {
+            @apply shadow-md py-2;
+        }
+
+        .price-comparison-card {
+            transition: all 0.3s ease;
+        }
+
+        .highlight-box {
+            position: relative;
+        }
+
+        .highlight-box::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            @apply bg-primary-600 rounded-full;
+        }
+
+        .success-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes showElement {
+            to {
+                opacity: 1;
+                transform: translateX(0) translateY(0);
             }
-            /* Định dạng cho kết quả tìm kiếm */
-            #searchResultsList {
-                display: none;
-                margin-bottom: 20px;
-                padding: 15px;
-                background-color: #f8f9fa;
-                border-radius: 5px;
-            }
-        </style>
-    
-        <!-- Header chính -->
-        <header class="header-custom text-dark p-3 border-bottom">
-            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-                <!-- Phần tiêu đề -->
-                <div class="mb-2 mb-md-0">
-                    <span class="brand-name fs-5 fw-bold d-block">MedBookingBTL</span>
-                    <small>HỆ THỐNG ĐẶT LỊCH KHÁM BỆNH VIỆN</small>
+        }
+
+        .animate-show-element {
+            animation: showElement 0.8s forwards cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .hover\:scale-105:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+    <header class="sticky-header bg-white border-b border-gray-200 py-4">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <a href="index.html" class="flex items-center">
+                        <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-heartbeat text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold text-gray-900">MedBookingBTL</h1>
+                            <p class="text-xs text-gray-500">HỆ THỐNG ĐẶT LỊCH KHÁM BỆNH</p>
+                        </div>
+                    </a>
                 </div>
-                <!-- Thanh tìm kiếm -->
-                <div class="search-container">
-                    <form id="searchForm">
-                        <input type="text" id="searchInput" placeholder="Tìm kiếm..." />
-                        <button type="submit">
-                            <i class="fas fa-search"></i> <!-- Biểu tượng kính lúp từ Font Awesome -->
+                <nav class="hidden lg:flex items-center space-x-8">
+                    <a href="index.html"
+                        class="text-gray-700 hover:text-primary-600 font-medium transition-colors">TRANG CHỦ</a>
+                    <div class="dropdown relative group">
+                        <button
+                            class="text-gray-700 hover:text-primary-600 font-medium transition-colors flex items-center">
+                            GIỚI THIỆU <i class="fas fa-chevron-down ml-1 text-xs"></i>
                         </button>
-                    </form>
-                </div>
-                <!-- Nút đăng ký / đăng nhập -->
-                <div class="user-actions">
-                    <a href="DANGKI.html" class="btn btn-primary text-white me-2">Đăng ký</a>
-                    <a href="DANGNHAP.html" class="btn btn-primary text-white">Đăng nhập</a>
+                        <div
+                            class="dropdown-menu absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <a href="CHUYENKHOA.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Chuyên
+                                Khoa</a>
+                            <a href="CSVC.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Cơ Sở Vật
+                                Chất</a>
+                        </div>
+                    </div>
+                    <div class="dropdown relative group">
+                        <button
+                            class="text-gray-700 hover:text-primary-600 font-medium transition-colors flex items-center">
+                            DỊCH VỤ Y TẾ <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div
+                            class="dropdown-menu absolute left-0 mt-2 w-64 bg-white rounded-md shadow-lg py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <a href="KHAMSUCKHOE.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Gói Khám
+                                Sức Khỏe</a>
+                            <a href="THAISAN.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Thai Sản &
+                                Phụ Khoa</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Tiêm Chủng Vắc Xin</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Phục Hồi Chức Năng</a>
+                            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Sức Khỏe Tinh Thần</a>
+                            <a href="BENHNEN.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Khám Bệnh
+                                Nền</a>
+                        </div>
+                    </div>
+                    <div class="dropdown relative group">
+                        <button
+                            class="text-gray-700 hover:text-primary-600 font-medium transition-colors flex items-center">
+                            HƯỚNG DẪN <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </button>
+                        <div
+                            class="dropdown-menu absolute left-0 mt-2 w-56 bg-white rounded-md shadow-lg py-1 z-10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <a href="khach.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Đặt Lịch
+                                Khám</a>
+                            <a href="banggia.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Bảng Giá Dịch
+                                Vụ</a>
+                            <a href="TIME.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Giờ Làm Việc</a>
+                        </div>
+                    </div>
+
+                    <a href="#" class="text-gray-700 hover:text-primary-600 font-medium transition-colors">LIÊN HỆ</a>
+                    <button id="btn-register"
+                        onclick="document.getElementById('register-modal').classList.remove('hidden')"
+                        class="m-4 px-4 py-2 bg-blue-600 text-white rounded-lg">
+                        Đăng ký
+                    </button>
+
+                    <button id="open-login" class="m-4 px-4 py-2 bg-blue-600 text-white rounded-lg">
+                        Đăng nhập
+                    </button>
+                    <span id="user-display" class="ml-4 font-semibold hidden relative group">
+    <span class="cursor-pointer hover:text-primary-500">Xin chào, <span id="username-display"></span></span>
+    <div class="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block">
+        <button id="logout-btn" class="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100">
+            <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+        </button>
+    </div>
+</span>
+                </nav>
+                <div class="lg:hidden">
+                    <button id="mobile-menu-button" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
                 </div>
             </div>
-        </header>
-    
-        <!-- Khu vực hiển thị gợi ý -->
-        <div id="searchResult"></div>
-    
-        <!-- Nội dung chính -->
-        <div class="container mt-4">
-            <!-- Kết quả tìm kiếm -->
-            <div id="searchResultsList"></div>
-            <!-- thanh điều hướng-->
-            <section>
-                <nav>
-                    <ul class="nav-links"><a href="index.html"  target="_parent"   data-keywords="home trang chính"> <b>TRANG CHỦ</b></a>
-                        <div class="dropdown">
-                            <span><a href="GIOITHIEU.html" data-keywords="introduce about"><b> GIỚI THIỆU </b></a></span>
-                            <div class="dropdown-content">
-                                <ul class="dropdown">
-                                    <li><a href="CHUYENKHOA.html" data-keywords="medical specialty"><b>CHUYÊN KHOA Y TẾ </b></a></li>
-                                    <li><a href="CSVC.html" data-keywords="facilities infrastructure"><b>CƠ SỞ VẬT CHẤT </b></a></li>
+        </div>
+        <div id="mobile-menu" class="lg:hidden hidden bg-white border-t border-gray-200">
+            <div class="container mx-auto px-4 py-3 space-y-2">
+                <a href="index.html" class="block py-2 text-gray-700 hover:text-primary-600">TRANG CHỦ</a>
+
+                <div class="dropdown">
+                    <button class="w-full flex justify-between items-center py-2 text-gray-700 hover:text-primary-600">
+                        GIỚI THIỆU <i class="fas fa-chevron-down text-xs dropdown-icon"></i>
+                    </button>
+                    <div class="dropdown-content pl-4 hidden">
+                        <a href="CHUYENKHOA.html" class="block py-2 text-gray-700 hover:text-primary-600">Chuyên
+                            Khoa</a>
+                        <a href="CSVC.html" class="block py-2 text-gray-700 hover:text-primary-600">Cơ Sở Vật Chất</a>
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <button class="w-full flex justify-between items-center py-2 text-gray-700 hover:text-primary-600">
+                        DỊCH VỤ Y TẾ <i class="fas fa-chevron-down text-xs dropdown-icon"></i>
+                    </button>
+                    <div class="dropdown-content pl-4 hidden">
+                        <a href="KHAMSUCKHOE.html" class="block py-2 text-gray-700 hover:text-primary-600">Gói Khám Sức
+                            Khỏe</a>
+                        <a href="THAISAN.html" class="block py-2 text-gray-700 hover:text-primary-600">Thai Sản & Phụ
+                            Khoa</a>
+                        <a href="#" class="block py-2 text-gray-700 hover:text-primary-600">Tiêm Chủng Vắc Xin</a>
+                        <a href="#" class="block py-2 text-gray-700 hover:text-primary-600">Phục Hồi Chức Năng</a>
+                        <a href="#" class="block py-2 text-gray-700 hover:text-primary-600">Sức Khỏe Tinh Thần</a>
+                        <a href="BENHNEN.html" class="block py-2 text-gray-700 hover:text-primary-600">Khám Bệnh Nền</a>
+                    </div>
+                </div>
+
+                <div class="dropdown">
+                    <button class="w-full flex justify-between items-center py-2 text-gray-700 hover:text-primary-600">
+                        HƯỚNG DẪN <i class="fas fa-chevron-down text-xs dropdown-icon"></i>
+                    </button>
+                    <div class="dropdown-content pl-4 hidden">
+                        <a href="khach.html" class="block py-2 text-gray-700 hover:text-primary-600">Đặt Lịch Khám</a>
+                        <a href="banggia.html" class="block py-2 text-gray-700 hover:text-primary-600">Bảng Giá Dịch
+                            Vụ</a>
+                        <a href="TIME.html" class="block py-2 text-gray-700 hover:text-primary-600">Giờ Làm Việc</a>
+                    </div>
+                </div>
+
+                <a href="#" class="block py-2 text-gray-700 hover:text-primary-600">LIÊN HỆ</a>
+
+                <div class="pt-2 border-t border-gray-200">
+                    <button id="open-login">Đăng nhập</button>
+                    <p class="text-center text-sm text-gray-500 mt-2">Chưa có tài khoản? <button id="open-register">Đăng
+                            ký ngay</button></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="flex-grow">
+        <div class="relative min-h-[500px] bg-cover bg-center flex items-center py-20 overflow-hidden"
+            style="background-image: url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80');">
+            <div class="absolute inset-0 bg-gradient-to-r from-gray-900/85 to-primary-800/70"></div>
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="max-w-2xl">
+                    <h1
+                        class="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 text-white leading-tight transform transition-all duration-1000 ease-out opacity-0 translate-x-[-50px] animate-show-element">
+                        BẢNG GIÁ DỊCH VỤ Y TẾ
+                    </h1>
+                    <div
+                        class="flex flex-wrap gap-5 opacity-0 translate-y-10 transition-all duration-1000 delay-500 animate-show-element">
+                        <a href="#comparison"
+                            class="bg-white text-primary-700 hover:bg-gray-50 px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-xl hover:scale-105 flex items-center">
+                            <i class="fas fa-balance-scale text-lg mr-3"></i>
+                            <span>So Sánh Ngay</span>
+                        </a>
+                        <a href="khach.html"
+                            class="bg-primary-600 hover:bg-primary-700 px-8 py-4 rounded-full font-semibold text-white transition-all duration-300 hover:shadow-xl hover:scale-105 flex items-center">
+                            <i class="fas fa-calendar-check text-lg mr-3"></i>
+                            <span>Đặt Lịch Khám</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-100 py-3 border-b border-gray-200">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <nav class="flex" aria-label="Breadcrumb">
+                    <ol class="flex items-center space-x-2 text-sm">
+                        <li>
+                            <a href="index.html" class="text-gray-500 hover:text-primary-600">Trang chủ</a>
+                        </li>
+                        <li>
+                            <i class="fas fa-chevron-right text-gray-400 text-xs"></i>
+                        </li>
+                        <li>
+                            <a href="banggia.html" class="text-primary-600 font-medium" aria-current="page">Bảng giá
+                                dịch vụ</a>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <section id="comparison" class="py-12 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">So Sánh Dịch Vụ Y Tế</h2>
+                    <p class="max-w-2xl mx-auto text-gray-600">Dưới đây là bảng so sánh chi tiết giữa Bệnh viện Đa khoa
+                        Phương Đông và Phòng khám Đa khoa 5 Sao Hà Nội</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md overflow-hidden mb-12">
+                    <div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+                        <div class="p-6 bg-gray-50">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Dịch Vụ</h3>
+                            <ul class="space-y-4">
+                                <li class="font-medium">Khám tổng quát</li>
+                                <li class="font-medium">Xét nghiệm & Chẩn đoán</li>
+                                <li class="font-medium">Chăm sóc đặc biệt</li>
+                                <li class="font-medium">Tiện ích & Dịch vụ</li>
+                            </ul>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-hospital text-blue-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900">Bệnh viện Phương Đông</h3>
+                            </div>
+                            <ul class="space-y-4">
+                                <li class="text-gray-700">Bác sĩ chuyên khoa sâu, cơ sở hiện đại, khám nội/ngoại trú
+                                </li>
+                                <li class="text-gray-700">Thiết bị xét nghiệm hiện đại, chẩn đoán phức tạp</li>
+                                <li class="text-gray-700">Gói thai sản trọn gói, chăm sóc toàn diện</li>
+                                <li class="text-gray-700">Không gian rộng, tiện ích đầy đủ, có thể chờ lâu</li>
+                            </ul>
+                        </div>
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-clinic-medical text-green-600"></i>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-900">Phòng khám 5 Sao</h3>
+                            </div>
+                            <ul class="space-y-4">
+                                <li class="text-gray-700">Quy mô nhỏ, quy trình nhanh, chủ yếu khám ngoại trú</li>
+                                <li class="text-gray-700">Xét nghiệm nhanh, phục vụ nhu cầu cơ bản</li>
+                                <li class="text-gray-700">Khám sức khỏe định kỳ, không có sản khoa chuyên sâu</li>
+                                <li class="text-gray-700">Dịch vụ nhanh chóng, thủ tục đơn giản</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-8">
+                    <div class="price-comparison-card bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">1. Khám Tổng Quát</h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="highlight-box bg-blue-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-hospital text-blue-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Bệnh viện Phương Đông</h4>
+                                    </div>
+                                    <p class="text-gray-700">Có đội ngũ bác sĩ chuyên khoa sâu, cơ sở vật chất hiện đại,
+                                        phục vụ cả khám chữa bệnh nội trú và ngoại trú. Hệ thống quản lý chất lượng dịch
+                                        vụ theo tiêu chuẩn quốc tế.</p>
+                                </div>
+                                <div class="highlight-box bg-green-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-clinic-medical text-green-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Phòng khám 5 Sao</h4>
+                                    </div>
+                                    <p class="text-gray-700">Là phòng khám tư nhân quy mô vừa, tập trung vào khám ngoại
+                                        trú với quy trình nhanh gọn, ít phải chờ đợi. Phù hợp cho các trường hợp khám
+                                        bệnh thông thường.</p>
+                                </div>
+                            </div>
+                            <div class="mt-6 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                                <p class="font-medium text-gray-800"><span class="text-blue-600">Bệnh viện Phương
+                                        Đông</span> nhỉnh hơn về chuyên môn và hệ thống y tế tổng thể.</p>
+                                <p class="font-medium text-gray-800"><span class="text-green-600">Phòng khám 5
+                                        Sao</span> nhỉnh hơn về tốc độ phục vụ và thủ tục đơn giản.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-comparison-card bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">2. Xét Nghiệm & Chẩn Đoán Hình Ảnh</h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="highlight-box bg-blue-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-flask text-blue-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Bệnh viện Phương Đông</h4>
+                                    </div>
+                                    <p class="text-gray-700">Đầy đủ các thiết bị xét nghiệm hiện đại như MRI, CT Scan,
+                                        X-quang kỹ thuật số, siêu âm màu 4D. Có thể thực hiện các xét nghiệm chuyên sâu
+                                        về gen, sinh học phân tử.</p>
+                                </div>
+                                <div class="highlight-box bg-green-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-vial text-green-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Phòng khám 5 Sao</h4>
+                                    </div>
+                                    <p class="text-gray-700">Cung cấp các dịch vụ xét nghiệm cơ bản như công thức máu,
+                                        sinh hóa máu, nước tiểu. Có siêu âm màu, X-quang thông thường. Kết quả xét
+                                        nghiệm nhanh trong ngày.</p>
+                                </div>
+                            </div>
+                            <div class="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                                <p class="font-medium text-gray-800"><span class="text-blue-600">Bệnh viện Phương
+                                        Đông</span> vượt trội về trang thiết bị xét nghiệm chuyên sâu và chẩn đoán hình
+                                    ảnh cao cấp.</p>
+                                <p class="font-medium text-gray-800"><span class="text-green-600">Phòng khám 5
+                                        Sao</span> phù hợp cho nhu cầu xét nghiệm cơ bản với thời gian chờ đợi ngắn.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-comparison-card bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">3. Chăm Sóc Sức Khỏe Đặc Biệt</h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="highlight-box bg-blue-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-baby text-blue-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Bệnh viện Phương Đông</h4>
+                                    </div>
+                                    <p class="text-gray-700">Cung cấp gói thai sản trọn gói từ khám thai định kỳ đến
+                                        sinh nở và chăm sóc sau sinh. Có phòng sinh family, dịch vụ tắm bé, chăm sóc sơ
+                                        sinh đặc biệt. Đội ngũ bác sĩ sản phụ khoa giàu kinh nghiệm.</p>
+                                </div>
+                                <div class="highlight-box bg-green-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-user-md text-green-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Phòng khám 5 Sao</h4>
+                                    </div>
+                                    <p class="text-gray-700">Có các gói khám sức khỏe tổng quát, khám xin việc, khám lái
+                                        xe. Không có dịch vụ nội trú hay sản khoa chuyên sâu. Phù hợp cho khám sức khỏe
+                                        định kỳ cá nhân và doanh nghiệp.</p>
+                                </div>
+                            </div>
+                            <div class="mt-6 p-4 bg-purple-50 rounded-lg border-l-4 border-purple-400">
+                                <p class="font-medium text-gray-800"><span class="text-blue-600">Bệnh viện Phương
+                                        Đông</span> là lựa chọn tốt nhất cho chăm sóc sức khỏe toàn diện và dài hạn, đặc
+                                    biệt là thai sản.</p>
+                                <p class="font-medium text-gray-800"><span class="text-green-600">Phòng khám 5
+                                        Sao</span> phù hợp cho các nhu cầu khám sức khỏe ngắn hạn và thủ tục hành chính.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="price-comparison-card bg-white rounded-xl shadow-md overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">4. Tiện Ích & Dịch Vụ Khách Hàng</h3>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="highlight-box bg-blue-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-concierge-bell text-blue-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Bệnh viện Phương Đông</h4>
+                                    </div>
+                                    <p class="text-gray-700">Không gian rộng rãi với đầy đủ tiện nghi: nhà hàng, quầy
+                                        café, khu vui chơi trẻ em. Có dịch vụ đặt lịch online, tư vấn từ xa, chăm sóc
+                                        khách hàng 24/7. Bãi đậu xe rộng rãi, có valet parking.</p>
+                                </div>
+                                <div class="highlight-box bg-green-50 p-5 rounded-lg">
+                                    <div class="flex items-center mb-3">
+                                        <div
+                                            class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-clock text-green-600 text-sm"></i>
+                                        </div>
+                                        <h4 class="font-semibold text-gray-900">Phòng khám 5 Sao</h4>
+                                    </div>
+                                    <p class="text-gray-700">Quy mô nhỏ gọn, thủ tục đơn giản, ít phải chờ đợi. Có dịch
+                                        vụ lấy mẫu xét nghiệm tại nhà, trả kết quả online. Phù hợp cho người bận rộn cần
+                                        khám nhanh. Bãi đậu xe hạn chế.</p>
+                                </div>
+                            </div>
+                            <div class="mt-6 p-4 bg-green-50 rounded-lg border-l-4 border-green-400">
+                                <p class="font-medium text-gray-800"><span class="text-blue-600">Bệnh viện Phương
+                                        Đông</span> cung cấp hệ thống tiện ích đầy đủ phục vụ cho điều trị dài hạn và
+                                    nhu cầu của bệnh nhân nội trú.</p>
+                                <p class="font-medium text-gray-800"><span class="text-green-600">Phòng khám 5
+                                        Sao</span> tối ưu cho những ai cần dịch vụ nhanh chóng với thời gian chờ đợi tối
+                                    thiểu.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="mt-12 bg-gradient-to-r from-primary-500 to-primary-700 text-white rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-8">
+                        <h3 class="text-2xl font-bold mb-4">Kết Luận</h3>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="bg-white bg-opacity-10 p-5 rounded-lg backdrop-blur-sm">
+                                <h4 class="font-semibold text-lg mb-3">Khi nào chọn Bệnh viện Phương Đông?</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Cần khám chữa bệnh chuyên sâu, điều trị phức tạp</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Chăm sóc thai sản toàn diện từ A-Z</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Cần xét nghiệm, chẩn đoán hình ảnh cao cấp</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Điều trị nội trú, phẫu thuật</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="bg-white bg-opacity-10 p-5 rounded-lg backdrop-blur-sm">
+                                <h4 class="font-semibold text-lg mb-3">Khi nào chọn Phòng khám 5 Sao?</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Khám sức khỏe định kỳ, khám nhanh</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Xét nghiệm cơ bản, cần kết quả nhanh</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Khám sức khỏe xin việc, lái xe</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <i class="fas fa-check-circle mt-1 mr-2 text-yellow-300"></i>
+                                        <span>Tiết kiệm thời gian, ít chờ đợi</span>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="dropdown">
-                            <span><a href="DICHVUYTE.html" target="_self" data-keywords="medical service healthcare"><b> DỊCH VỤ Y TẾ </b></a></span>
-                            <div class="dropdown-content">
-                                <ul class="dropdown">
-                                    <li><a href="KHAMSUCKHOE.html" data-keywords="health checkup package"><b>GÓI KHÁM SỨC KHỎE </b></a></li>
-                                    <li><a href="THAISAN.html" data-keywords="maternity obstetrics gynecology"><b>THAI SẢN VÀ PHỤ KHOA </b></a></li>
-                                    <li><a href="https://benhvienphuongdong.vn/trung-tam-tu-van-tiem-chung-vac-xin/" data-keywords="vaccination center"><b>TRUNG TÂM TƯ
-                                                VẤN VÀ TIÊM CHỦNG VẮC XIN </b></a></li>
-                                    <li><a href="https://benhvienphuongdong.vn/dich-vu/goi-can-thiep-tre-cham-phat-trien-ngon-ngu/" data-keywords="rehabilitation therapy"><b>GÓI
-                                                KHÁM PHỤC HỒI CHỨC NĂNG </b></a></li>
-                                    <li><a href="https://benhvienphuongdong.vn/trung-tam-cham-soc-suc-khoe-tinh-than/" data-keywords="mental health care"><b>TRUNG TÂM
-                                                CHĂM SÓC SỨC KHỎE TINH THẦN</b></a></li>
-                                    <li><a href="BENHNEN.html" data-keywords="chronic disease home care"><b>KHÁM BỆNH NỀN TẠI NHÀ </b></a></li>
-                                </ul>
-                            </div>
+                        <div class="mt-6 text-center">
+                            <a href="khach.html"
+                                class="inline-block bg-white text-primary-600 hover:bg-gray-100 px-6 py-3 rounded-full font-medium transition-colors">
+                                <i class="fas fa-calendar-check mr-2"></i> ĐẶT LỊCH KHÁM NGAY
+                            </a>
                         </div>
-                
-                        <div class="dropdown">
-                            <span><a href="#" data-keywords="customer guide help"><b>HƯỚNG DẪN KHÁCH HÀNG</b></a></span>
-                            <div class="dropdown-content">
-                                <ul class="dropdown">
-                                    <li><a href="khach.html" data-keywords="book appointment near you schedule"> <b>ĐẶT LỊCH KHÁM GẦN BẠN</b> </a></li>
-                                    <li><a href="banggia.html" data-keywords="price list service fee"> <b>BẢNG GIÁ DỊCH VỤ CHUNG</b> </a></li>
-                                    <li><a href="TIME.html" data-keywords="working hours schedule"> <b>GIỜ LÀM VIỆC</b> </a> </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <a href="#"  data-keywords="contact support"><b>LIÊN HỆ</b></a>
-            </section>
-    <div class="container">
-        <section class="section">
-            <h2>BẢNG GIÁ DỊCH VỤ</h2>
-            <p><strong>Dưới đây là so sánh tổng quan giữa "Bệnh viện Đa khoa Phương Đông" và "Phòng khám Đa khoa 5 Sao Hà Nội" theo từng mảng dịch vụ:</strong></p>
-            <p><strong>1. Khám tổng quát:</strong></p>
-            <p><strong>Bệnh viện Đa khoa Phương Đông:</strong> Có đội ngũ bác sĩ chuyên khoa sâu, cơ sở vật chất hiện đại, phục vụ cả khám chữa bệnh nội trú và ngoại trú.</p>
-            <p><strong>Phòng khám Đa khoa 5 Sao Hà Nội:</strong> Là phòng khám tư nhân nên chủ yếu tập trung vào khám ngoại trú, quy mô nhỏ hơn nhưng quy trình nhanh gọn, ít phải chờ đợi.</p>
-            <p><strong>Bệnh viện đa khoa Phương Đông nhỉnh hơn về chuyên môn và hệ thống y tế tổng thể.</strong></p>
-            <p><strong>Phòng khám đa khoa 5 Sao HN nhỉnh hơn về tốc độ phục vụ và thủ tục đơn giản.</strong></p>
-            <p><strong>2. Xét nghiệm và chẩn đoán hình ảnh:</strong></p>
-            <p><strong>Bệnh viện đa khoa Phương Đông:</strong> Có các thiết bị xét nghiệm và chẩn đoán hiện đại hơn, phục vụ cả các ca bệnh phức tạp.</p>
-            <p><strong>Phòng khám đa khoa 5 Sao HN:</strong> Cung cấp dịch vụ xét nghiệm nhanh, phục vụ nhu cầu cơ bản như xét nghiệm máu, siêu âm, X-quang.</p>
-            <p><strong>Bệnh viện đa khoa Phương Đông nhỉnh hơn về trang thiết bị xét nghiệm chuyên sâu.</strong></p>
-            <p><strong>Phòng khám đa khoa 5 Sao HN nhỉnh hơn về xét nghiệm nhanh, phù hợp nhu cầu đơn giản.</strong></p>
-            <p><strong>3. Chăm sóc sức khỏe đặc biệt</strong></p>
-            <p><strong>Bệnh viện đa khoa Phương Đông:</strong> Cung cấp gói thai sản trọn gói, chăm sóc trước và sau sinh, có dịch vụ nội trú.</p>
-            <p><strong>Phòng khám đa khoa 5 Sao HN:</strong> Có các gói khám sức khỏe xin việc, lái xe, khám định kỳ nhưng không có dịch vụ nội trú hay sản khoa chuyên sâu.</p>
-            <p><strong>Bệnh viện đa khoa Phương Đông nhỉnh hơn về chăm sóc sức khỏe toàn diện và dài hạn.</strong></p>
-            <p><strong>4. Tiện ích và dịch vụ khách hàng</strong></p>
-            <p><strong>Bệnh viện đa khoa Phương Đông:</strong> Là bệnh viện lớn, không gian rộng rãi, có khu nội trú nhưng có thể phải chờ lâu.</p>
-            <p><strong>Phòng khám đa khoa 5 Sao HN:</strong> Phòng khám nhỏ, dịch vụ nhanh chóng, quy trình đơn giản.</p>
-            <p><strong>Bệnh viện đa khoa Phương Đông nhỉnh hơn về tiện ích đầy đủ và điều trị dài hạn.</strong></p>
-            <p><strong>Phòng khám đa khoa 5 Sao HN nhỉnh hơn về thời gian chờ đợi và thủ tục đơn giản.</strong></p>
-            <p><strong>Kết luận:</strong></p>
-            <p><strong>Nếu bạn cần một bệnh viện với đầy đủ các dịch vụ y tế từ cơ bản đến chuyên sâu, Bệnh viện đa khoa Phương Đông là lựa chọn tốt hơn.</strong></p>
-            <p><strong>Nếu bạn chỉ cần khám nhanh, xét nghiệm cơ bản, khám sức khỏe định kỳ, Phòng khám Đa khoa 5 Sao HNHN sẽ thuận tiện hơn.</strong></p>
-            <p>
-                <li><a href="https://benhvienphuongdong.vn/bang-gia-dich-vu/"><b>click vào đây để biết thêm thông tin về Bệnh viện Phương Đông.</b></a></li>
-                <li><a href="https://phongkham5sao.vn/bang-gia-dich-vu/"><b>click vào đây để biết thêm về phòng khám 5 sao HN</b></a></li>
-            </p>
+                    </div>
+                </div>
+            </div>
         </section>
+        <section class="py-12 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl font-bold text-center text-gray-900 mb-8">Thông Tin Bổ Sung</h2>
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-file-invoice-dollar text-blue-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">Bảng Giá Chi Tiết</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            <a href="https://benhvienphuongdong.vn/bang-gia-dich-vu/" target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center text-primary-600 hover:text-primary-800 font-medium">
+                                Bệnh viện Phương Đông
+                                <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                            </a>
+                        <div class="mt-2">
+                            <a href="https://phongkham5sao.vn/bang-gia-dich-vu/" target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center text-green-600 hover:text-green-800 font-medium">
+                                Phòng khám 5 Sao
+                                <i class="fas fa-external-link-alt ml-2 text-xs"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-headset text-purple-600 text-xl"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900">Hỗ Trợ Khách Hàng</h3>
+                        </div>
+                        <p class="text-gray-600 mb-4">Đội ngũ tư vấn viên sẵn sàng hỗ trợ 24/7 mọi thắc mắc về dịch vụ
+                            và đặt lịch khám bệnh</p>
+                        <div class="space-y-2">
+                            <div class="flex items-center">
+                                <i class="fas fa-phone-alt text-gray-500 mr-3"></i>
+                                <a href="tel:18001234" class="text-gray-700 hover:text-primary-600">1800 1234 (Miễn
+                                    phí)</a>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-envelope text-gray-500 mr-3"></i>
+                                <a href="mailto:info@medbookingbtl.com"
+                                    class="text-gray-700 hover:text-primary-600">info@medbookingbtl.com</a>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fab fa-facebook-messenger text-gray-500 mr-3"></i>
+                                <a href="https://m.me/MedBookingBTL" target="_blank" rel="noopener noreferrer"
+                                    class="text-gray-700 hover:text-primary-600">Messenger</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="py-12 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+                <h2 class="text-2xl font-bold text-center text-gray-900 mb-8">Câu Hỏi Thường Gặp</h2>
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button
+                            class="faq-question w-full flex justify-between items-center p-5 text-left font-medium text-gray-900 hover:bg-gray-50 transition-colors">
+                            <span>Làm thế nào để đặt lịch khám qua MedBookingBTL?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer hidden p-5 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">Bạn có thể đặt lịch khám dễ dàng bằng 3 cách:</p>
+                            <ol class="list-decimal pl-5 mt-2 space-y-2 text-gray-600">
+                                <li>Truy cập trang <a href="khach.html" class="text-primary-600 hover:underline">Đặt
+                                        lịch khám</a> và điền thông tin</li>
+                                <li>Gọi điện đến tổng đài 1800 1234</li>
+                                <li>Nhắn tin qua fanpage Facebook hoặc Zalo OA của chúng tôi</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button
+                            class="faq-question w-full flex justify-between items-center p-5 text-left font-medium text-gray-900 hover:bg-gray-50 transition-colors">
+                            <span>Chi phí đặt lịch khám có phải trả trước không?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer hidden p-5 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">MedBookingBTL hoàn toàn miễn phí dịch vụ đặt lịch khám. Bạn chỉ cần
+                                thanh toán chi phí dịch vụ y tế trực tiếp tại cơ sở khám chữa bệnh sau khi sử dụng dịch
+                                vụ.</p>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button
+                            class="faq-question w-full flex justify-between items-center p-5 text-left font-medium text-gray-900 hover:bg-gray-50 transition-colors">
+                            <span>Tôi có thể hủy hoặc đổi lịch khám không?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer hidden p-5 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">Bạn có thể hủy hoặc đổi lịch khám dễ dàng:</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-2 text-gray-600">
+                                <li>Hủy/đổi trước 24h: Thực hiện trực tiếp trên website hoặc app</li>
+                                <li>Hủy/đổi trong vòng 24h: Liên hệ tổng đài 1800 1234</li>
+                                <li>Miễn phí hủy/đổi lịch trước 2 giờ so với giờ hẹn</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden">
+                        <button
+                            class="faq-question w-full flex justify-between items-center p-5 text-left font-medium text-gray-900 hover:bg-gray-50 transition-colors">
+                            <span>Làm sao để biết bảng giá trên website là chính xác?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer hidden p-5 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">Tất cả thông tin bảng giá trên MedBookingBTL được cập nhật trực
+                                tiếp từ các bệnh viện và phòng khám đối tác. Tuy nhiên, để đảm bảo chính xác nhất:</p>
+                            <ul class="list-disc pl-5 mt-2 space-y-2 text-gray-600">
+                                <li>Kiểm tra ngày cập nhật cuối cùng (luôn hiển thị trên trang)</li>
+                                <li>Xác nhận lại qua tổng đài trước khi đặt lịch</li>
+                                <li>Tham khảo website chính thức của bệnh viện/phòng khám</li>
+                            </ul>
+                            <p class="mt-3 text-gray-600">Giá có thể thay đổi tùy theo tình trạng sức khỏe và chỉ định
+                                của bác sĩ.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center">
+                    <a href="#" class="inline-flex items-center text-primary-600 hover:text-primary-800 font-medium">
+                        Xem thêm câu hỏi thường gặp
+                        <i class="fas fa-arrow-right ml-2 text-sm"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+        <section class="py-12 bg-primary-700 text-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-2xl sm:text-3xl font-bold mb-4">Đặt Lịch Khám Ngay Hôm Nay</h2>
+                <p class="max-w-2xl mx-auto text-lg mb-8">Tiết kiệm thời gian và nhận ưu đãi đặc biệt khi đặt lịch qua
+                    MedBookingBTL</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="khach.html"
+                        class="bg-white text-primary-600 hover:bg-gray-100 px-6 py-3 rounded-full font-medium transition-colors flex items-center">
+                        <i class="fas fa-calendar-check mr-2"></i> Đặt Lịch Online
+                    </a>
+                    <a href="tel:18001234"
+                        class="bg-primary-800 hover:bg-primary-900 px-6 py-3 rounded-full font-medium transition-colors flex items-center">
+                        <i class="fas fa-phone-alt mr-2"></i> Gọi Ngay: 1800 1234
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="bg-gray-900 text-white pt-12 pb-6">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Về MedBookingBTL</h3>
+                    <p class="text-gray-400 mb-4">Hệ thống đặt lịch khám bệnh trực tuyến hàng đầu, kết nối bệnh nhân với
+                        các cơ sở y tế chất lượng.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-facebook-f text-lg"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter text-lg"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-instagram text-lg"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-linkedin-in text-lg"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liên Kết Nhanh</h3>
+                    <ul class="space-y-2">
+                        <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">Trang Chủ</a>
+                        </li>
+                        <li><a href="GIOITHIEU.html" class="text-gray-400 hover:text-white transition-colors">Giới
+                                Thiệu</a></li>
+                        <li><a href="DICHVUYTE.html" class="text-gray-400 hover:text-white transition-colors">Dịch Vụ Y
+                                Tế</a></li>
+                        <li><a href="khach.html" class="text-gray-400 hover:text-white transition-colors">Đặt Lịch
+                                Khám</a></li>
+                        <li><a href="banggia.html" class="text-gray-400 hover:text-white transition-colors">Bảng Giá</a>
+                        </li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Liên Hệ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Dịch Vụ</h3>
+                    <ul class="space-y-2">
+                        <li><a href="KHAMSUCKHOE.html" class="text-gray-400 hover:text-white transition-colors">Gói Khám
+                                Sức Khỏe</a></li>
+                        <li><a href="THAISAN.html" class="text-gray-400 hover:text-white transition-colors">Thai Sản &
+                                Phụ Khoa</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Tiêm Chủng Vắc Xin</a>
+                        </li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Phục Hồi Chức Năng</a>
+                        </li>
+                        <li><a href="BENHNEN.html" class="text-gray-400 hover:text-white transition-colors">Khám Bệnh
+                                Nền</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Tư Vấn Sức Khỏe</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Liên Hệ</h3>
+                    <ul class="space-y-3 text-gray-400">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-3"></i>
+                            <span>Bắc Từ Liêm, Hà Nội</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-3"></i>
+                            <a href="tel:18001234" class="hover:text-white transition-colors">1800 1234</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3"></i>
+                            <a href="mailto:info@medbookingbtl.com"
+                                class="hover:text-white transition-colors">info@medbookingbtl.com</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock mr-3"></i>
+                            <span>Thứ 2 - CN: 7:00 - 21:00</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2023 MedBookingBTL. Bảo lưu mọi quyền.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Điều Khoản Sử Dụng</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Chính Sách Bảo Mật</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Sitemap</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+
+    <!--Đăng ký-->
+    <div class="fixed inset-0 bg-black/50 z-50 hidden" id="register-modal">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div
+                class="bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-3xl max-h-[90vh] flex flex-col animate-fadeInUp">
+                <!-- Close Button -->
+                <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10" id="close-modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <div class="flex flex-col md:flex-row flex-1 overflow-auto">
+                    <div class="hidden md:block md:w-2/5 bg-cover bg-center min-h-[300px] md:min-h-full"
+                        style="background-image: url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80')">
+                        <div
+                            class="h-full bg-primary-600/30 backdrop-blur-sm p-6 flex flex-col justify-center text-white">
+                            <div class="mt-auto">
+                                <button type="submit"
+                                    class="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition duration-300 transform hover:scale-[1.01] text-sm">
+                                    Đăng ký ngay
+                                </button>
+                                <p class="mt-4 text-sm text-center">
+                                    Nếu đã có tài khoản,
+                                    <button id="open-login">Đăng nhập ngay</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="w-full md:w-3/5 p-6 md:p-8 overflow-y-auto">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Đăng ký tài khoản</h2>
+
+                        <form class="space-y-4">
+                            <div>
+                                <label for="fullname" class="block text-sm font-medium text-gray-700 mb-1">Họ và
+                                    tên</label>
+                                <input type="text" id="fullname"
+                                    class="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                    placeholder="Nguyễn Văn A">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                <input type="email" id="email"
+                                    class="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                    placeholder="example@email.com">
+                            </div>
+                            <div>
+                                <label for="birthdate" class="block text-sm font-medium text-gray-700 mb-1">Ngày
+                                    sinh</label>
+                                <input type="date" id="birthdate"
+                                    class="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm">
+                            </div>
+                            <div>
+                                <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Địa
+                                    chỉ</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <select
+                                        class="px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm">
+                                        <option value="">Chọn tỉnh/thành</option>
+                                        <option value="hanoi">Hà Nội</option>
+                                        <option value="hcm">TP.Hồ Chí Minh</option>
+                                    </select>
+                                    <select
+                                        class="px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm">
+                                        <option value="">Chọn quận/huyện</option>
+                                        <option value="q1">Quận 1</option>
+                                        <option value="q2">Quận 2</option>
+                                    </select>
+                                </div>
+                                <input type="text" id="address"
+                                    class="w-full mt-3 px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                    placeholder="Số nhà, đường...">
+                            </div>
+                            <div>
+                                <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Tên đăng
+                                    nhập</label>
+                                <input type="text" id="username"
+                                    class="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                    placeholder="Từ 6-20 ký tự">
+                            </div>
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mật
+                                    khẩu</label>
+                                <input type="password" id="password"
+                                    class="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                    placeholder="Ít nhất 8 ký tự">
+                            </div>
+                            <div>
+                                <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">Xác
+                                    nhận mật khẩu</label>
+                                <input type="password" id="confirm-password"
+                                    class="w-full px-3 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+                                    placeholder="Nhập lại mật khẩu">
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeInUp {
+            animation: fadeInUp 0.3s ease-out forwards;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background-color: #cbd5e0;
+            border-radius: 3px;
+        }
+
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background-color: #f1f5f9;
+        }
+    </style>
+
+    <script>
+
+        document.getElementById('open-register').addEventListener('click', function () {
+            document.getElementById('register-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        document.getElementById('close-modal').addEventListener('click', function () {
+            document.getElementById('register-modal').classList.add('hidden');
+            document.body.style.overflow = ''; y
+        });
+    </script>
+
+    <div class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4" id="login-modal">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md modal-content">
+            <button class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-transform duration-300"
+                id="close-login">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="p-8">
+                <div class="flex justify-center mb-6">
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Tiêu đề -->
+                <h2 class="text-2xl font-bold text-center text-gray-800 mb-2">Đăng nhập tài khoản</h2>
+                <p class="text-gray-600 text-center mb-8">Vui lòng nhập thông tin đăng nhập</p>
+                <form class="space-y-5" id="login-form">
+                    <div>
+                        <label for="login-username" class="block text-sm font-medium text-gray-700 mb-1">Tên đăng
+                            nhập</label>
+                        <input type="text" id="login-username"
+                            class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                            placeholder="Nhập tên đăng nhập của bạn" required>
+                    </div>
+
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Mật
+                            khẩu</label>
+                        <div class="relative">
+                            <input type="password" id="login-password"
+                                class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+                                placeholder="Nhập mật khẩu" required>
+                            <button type="button"
+                                class="absolute right-3 top-3 text-gray-500 hover:text-gray-700 transition-transform duration-200"
+                                id="toggle-password">
+                                <!-- icon toggle password -->
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Các phần khác giữ nguyên -->
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition duration-300 transform hover:scale-[1.02]">
+                        Đăng nhập
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        #login-modal {
+            transition: opacity 0.3s ease-out;
+        }
+
+        .modal-content {
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        #close-login:hover {
+            transform: rotate(90deg);
+        }
+
+        #toggle-password:hover {
+            transform: scale(1.1);
+        }
+
+        input,
+        button,
+        a {
+            transition: all 0.2s ease;
+        }
+    </style>
+    <script>
+        // Xử lý mở/đóng modal
+        document.getElementById('open-login').addEventListener('click', function () {
+            const modal = document.getElementById('login-modal');
+            modal.classList.remove('hidden');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        });
+        document.getElementById('close-login').addEventListener('click', function () {
+            const modal = document.getElementById('login-modal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        });
+        document.getElementById('toggle-password').addEventListener('click', function () {
+            const passwordInput = document.getElementById('login-password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.querySelector('svg').classList.toggle('text-blue-600');
+        });
+    </script>
+    <button id="back-to-top"
+        class="fixed bottom-8 right-8 w-12 h-12 bg-primary-600 text-white rounded-full shadow-lg flex items-center justify-center opacity-0 invisible transition-all duration-300">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    <script>
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        document.querySelectorAll('.dropdown button').forEach(button => {
+            button.addEventListener('click', () => {
+                const dropdownContent = button.nextElementSibling;
+                dropdownContent.classList.toggle('hidden');
+                const icon = button.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('rotate-180');
+                }
+            });
+        });
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+                answer.classList.toggle('hidden');
+                if (icon) {
+                    icon.classList.toggle('rotate-180');
+                }
+                document.querySelectorAll('.faq-question').forEach(q => {
+                    if (q !== question) {
+                        q.nextElementSibling.classList.add('hidden');
+                        q.querySelector('i').classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+        const header = document.querySelector('.sticky-header');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+        const backToTopButton = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        if ('loading' in HTMLImageElement.prototype) {
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            images.forEach(img => {
+                img.loading = 'lazy';
+            });
+        } else {
+            const lazyLoadScript = document.createElement('script');
+            lazyLoadScript.src = 'https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.6.1/dist/lazyload.min.js';
+            document.body.appendChild(lazyLoadScript);
+            lazyLoadScript.onload = () => {
+                const lazyLoadInstance = new LazyLoad({
+                    elements_selector: '[loading="lazy"]'
+                });
+            };
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = document.querySelectorAll('.animate-show-element');
+            elements.forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.classList.add('animate-show-element');
+                }, 100);
+            });
+        });
+    </script>
+
+
+    <script>
+        // ============== IndexedDB Setup ==============
+        const DB_NAME = 'UserManagementDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'users';
+        let db;
+        function openDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onerror = (event) => {
+                    console.error('Database error:', event.target.error);
+                    reject(event.target.error);
+                };
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                        store.createIndex('email', 'email', { unique: true });
+                        store.createIndex('username', 'username', { unique: true });
+                    }
+                };
+            });
+        }
+        async function addUser(user) {
+            await openDatabase();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.add({
+                    ...user,
+                    status: 'active',
+                    createdAt: new Date().toISOString()
+                });
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (event) => reject(event.target.error);
+            });
+        }
+        // ============== Xử lý form đăng ký ==============
+        document.addEventListener('DOMContentLoaded', () => {
+            const registerBtn = document.querySelector('#register-modal button[type="submit"]');
+            const closeModalBtn = document.getElementById('close-modal');
+
+            if (registerBtn) {
+                registerBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+
+                    const user = {
+                        fullname: document.getElementById('fullname').value,
+                        email: document.getElementById('email').value,
+                        birthdate: document.getElementById('birthdate').value,
+                        province: document.querySelector('#register-modal select:nth-of-type(1)').value,
+                        district: document.querySelector('#register-modal select:nth-of-type(2)').value,
+                        street: document.getElementById('address').value,
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    };
+                    if (user.password !== document.getElementById('confirm-password').value) {
+                        alert('Mật khẩu xác nhận không khớp!');
+                        return;
+                    }
+
+                    try {
+                        await addUser(user);
+                        alert('Đăng ký thành công!');
+                        document.getElementById('register-modal').classList.add('hidden');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        if (error.name === 'ConstraintError') {
+                            alert('Email hoặc tên đăng nhập đã tồn tại!');
+                        } else {
+                            alert('Có lỗi xảy ra khi đăng ký');
+                        }
+                    }
+                });
+            }
+
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', () => {
+                    document.getElementById('register-modal').classList.add('hidden');
+                });
+            }
+        });
+    </script>
+    <script>
+        // ============== IndexedDB Setup ==============
+        function openDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = (event) => {
+                    console.error('Database error:', event.target.error);
+                    reject(event.target.error);
+                };
+
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+
+                        store.createIndex('email', 'email', { unique: true });
+                        store.createIndex('username', 'username', { unique: true });
+                    }
+                };
+            });
+        }
+        async function addUser(user) {
+            await openDatabase();
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+
+                const request = store.add({
+                    ...user,
+                    status: 'active',
+                    createdAt: new Date().toISOString()
+                });
+
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = (event) => reject(event.target.error);
+            });
+        }
+        // ============== Xử lý đăng nhập ==============
+        document.addEventListener('DOMContentLoaded', async () => {
+            const btnLogin = document.getElementById('open-login');
+            const btnRegister = document.getElementById('btn-register');
+            const loginModal = document.getElementById('login-modal');
+            const closeLogin = document.getElementById('close-login');
+            const loginForm = document.getElementById('login-form');
+            const userDisplay = document.getElementById('user-display');
+
+            if (!btnLogin || !btnRegister || !loginModal || !closeLogin || !loginForm || !userDisplay) {
+                console.error('Missing required DOM elements');
+                return;
+            }
+
+            try {
+                await openDatabase();
+            } catch (error) {
+                console.error('Database error:', error);
+                alert('Database connection error!');
+                return;
+            }
+            btnLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginModal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            });
+
+            closeLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                loginModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            });
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const username = document.getElementById('login-username').value.trim();
+                const password = document.getElementById('login-password').value.trim();
+
+                if (!username || !password) {
+                    alert('Vui lòng nhập đầy đủ thông tin!');
+                    return;
+                }
+
+                try {
+                    const user = await getUserByUsername(username);
+
+                    if (!user) {
+                        alert('Tên đăng nhập không tồn tại!');
+                        return;
+                    }
+
+                    if (user.password !== password) {
+                        alert('Mật khẩu không đúng!');
+                        return;
+                    }
+                    loginModal.classList.add('hidden');
+                    document.body.style.overflow = '';
+                    btnLogin.style.display = 'none';
+                    btnRegister.style.display = 'none';
+                    userDisplay.textContent = `Xin chào, ${user.fullname || user.username}`;
+                    userDisplay.classList.remove('hidden');
+                    showSuccessMessage('Đăng nhập thành công!');
+
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Có lỗi xảy ra khi đăng nhập!');
+                }
+            });
+            function getUserByUsername(username) {
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction([STORE_NAME], 'readonly');
+                    const store = transaction.objectStore(STORE_NAME);
+                    const index = store.index('username');
+                    const request = index.get(username);
+
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            }
+            function showSuccessMessage(message) {
+                const messageBox = document.createElement('div');
+                messageBox.textContent = message;
+                messageBox.className = 'success-message';
+
+                document.body.appendChild(messageBox);
+                setTimeout(() => {
+                    messageBox.classList.add('show');
+                }, 10);
+                setTimeout(() => {
+                    messageBox.classList.remove('show');
+                    setTimeout(() => {
+                        messageBox.remove();
+                    }, 300);
+                }, 2000);
+            }
+        });
+    </script>
 </body>
+
 </html>
