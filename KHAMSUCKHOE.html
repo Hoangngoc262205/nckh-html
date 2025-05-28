@@ -1,133 +1,604 @@
 <!DOCTYPE html>
-<html>
-<head lang="vnn">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover, shrink-to-fit=no" />
-<title>MebBookingBTL - Đặt lịch khám bệnh </title> <!--tieu de hien thi tren tab trinh duyet -->
-<meta name="description" content="Đặt lịch khám online nhanh chóng tại các bệnh viện gần bạn. Tích hợp Google Maps, cung cấp thông tin bệnh viện chi tiết: chuyên khoa, bác sĩ, giờ làm việc.">
-<meta name="keywords" content="bênh viện,đặt lịch ,tra cứu thông tin bệnh viện, bác sĩ , Bắc Từ Liêm">
-<!-- Favicon (icon nhỏ trên tab trình duyệt -->
-<link rel="icon" href="image/x-icon">
-<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
-    <!-- Font Awesome CSS cục bộ -->
-    <link rel="stylesheet" href="fontawesome/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <!-- Font Awesome CSS để sử dụng biểu tượng kính lúp -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<link rel="stylesheet" href="main.css">
-<img src="khamsuckhoe.jpg"
-style ="width: 100%; height: auto; display: block;" >
-
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedBookingBTL - Đặt lịch khám bệnh</title>
+    <meta name="description" content="Đặt lịch khám online nhanh chóng tại các bệnh viện gần bạn. Tích hợp Google Maps, cung cấp thông tin bệnh viện chi tiết">
+    <meta name="keywords" content="bệnh viện, đặt lịch, khám sức khỏe, Bắc Từ Liêm">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1a6fb0;
+            --secondary: #2c9ab7;
+            --light: #f8f9fa;
+            --accent: #ff7e5f;
+            --dark: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f8fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .header-custom {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .brand-name {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .brand-subtitle {
+            color: rgba(255,255,255,0.85);
+            font-size: 0.85rem;
+        }
+        
+        .search-container {
+            position: relative;
+            margin: 15px 0;
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 10px 20px;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .search-container button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+        }
+        
+        .user-actions .btn {
+            border-radius: 50px;
+            font-weight: 500;
+            padding: 8px 20px;
+            margin: 0 5px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .btn-outline-light {
+            color: white;
+            border-color: white;
+        }
+        
+        .btn-outline-light:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        /* Navigation */
+        .navbar-custom {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 0;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            flex-wrap: wrap;
+        }
+        
+        .nav-links > li {
+            position: relative;
+            padding: 15px 20px;
+        }
+        
+        .nav-links > li > a {
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            display: block;
+        }
+        
+        .nav-links > li > a:hover {
+            color: var(--primary);
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 250px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 8px;
+            padding: 10px 0;
+            top: 100%;
+            left: 0;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        .dropdown-content a {
+            color: var(--dark);
+            padding: 12px 20px;
+            text-decoration: none;
+            display: block;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f0f8ff;
+            color: var(--primary);
+        }
+        
+        /* Main Content */
+        .page-header {
+            background: linear-gradient(rgba(26, 111, 176, 0.85), rgba(26, 111, 176, 0.85)), url('khamsuckhoe.jpg') center/cover no-repeat;
+            padding: 80px 0 60px;
+            color: white;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-header h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .page-header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .health-packages {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            color: var(--primary);
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .package-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .package-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.12);
+        }
+        
+        .package-icon {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-size: 2.5rem;
+            padding: 25px 0;
+            text-align: center;
+        }
+        
+        .package-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .package-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .package-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 600;
+            margin-top: auto;
+            align-self: flex-start;
+            transition: background 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .package-btn:hover {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: rgba(255,255,255,0.8);
+            padding: 60px 0 30px;
+        }
+        
+        .footer-title {
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            transition: background 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            margin-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.6);
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                width: 100%;
+            }
+            
+            .page-header {
+                padding: 60px 0 40px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-custom .container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-actions {
+                margin-top: 15px;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
 </head>
 <body>
-        <!-- Bootstrap CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-        <style>
-            /* Tuỳ chỉnh màu nền pastel */
-            .header-custom {
-                background-color: #cce5ff; /* Xanh dương pastel */
-            }
-            /* Định dạng cho kết quả tìm kiếm */
-            #searchResultsList {
-                display: none;
-                margin-bottom: 20px;
-                padding: 15px;
-                background-color: #f8f9fa;
-                border-radius: 5px;
-            }
-        </style>
-    
-        <!-- Header chính -->
-        <header class="header-custom text-dark p-3 border-bottom">
-            <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-                <!-- Phần tiêu đề -->
-                <div class="mb-2 mb-md-0">
-                    <span class="brand-name fs-5 fw-bold d-block">MedBookingBTL</span>
-                    <small>HỆ THỐNG ĐẶT LỊCH KHÁM BỆNH VIỆN</small>
-                </div>
-                <!-- Thanh tìm kiếm -->
-                <div class="search-container">
-                    <form id="searchForm">
-                        <input type="text" id="searchInput" placeholder="Tìm kiếm..." />
-                        <button type="submit">
-                            <i class="fas fa-search"></i> <!-- Biểu tượng kính lúp từ Font Awesome -->
-                        </button>
-                    </form>
-                </div>
-                <!-- Nút đăng ký / đăng nhập -->
-                <div class="user-actions">
-                    <a href="DANGKI.html" class="btn btn-primary text-white me-2">Đăng ký</a>
-                    <a href="DANGNHAP.html" class="btn btn-primary text-white">Đăng nhập</a>
-                </div>
+    <!-- Header -->
+    <header class="header-custom text-white">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <div class="mb-3 mb-md-0 text-center text-md-start">
+                <span class="brand-name d-block">MedBookingBTL</span>
+                <small class="brand-subtitle">HỆ THỐNG ĐẶT LỊCH KHÁM BỆNH VIỆN</small>
             </div>
-        </header>
-    
-        <!-- Khu vực hiển thị gợi ý -->
-        <div id="searchResult"></div>
-    
-        <!-- Nội dung chính -->
-        <div class="container mt-4">
-            <!-- Kết quả tìm kiếm -->
-            <div id="searchResultsList"></div>
-<!-- Navigation -->
-<section>
-    <nav>
-        <ul class="nav-links"><a href="index.html" target="_parent"  data-keywords="home trang chính"> <b>TRANG CHỦ</b></a>
-            <div class="dropdown">
-                <span><a href="GIOITHIEU.html" data-keywords="introduce about"><b> GIỚI THIỆU </b></a></span>
-                <div class="dropdown-content">
-                    <ul class="dropdown">
-                        <li><a href="CHUYENKHOA.html" data-keywords="medical specialty"><b>CHUYÊN KHOA Y TẾ </b></a></li>
-                        <li><a href="CSVC.html" data-keywords="facilities infrastructure"><b>CƠ SỞ VẬT CHẤT </b></a></li>
-                    </ul>
-                </div>
+            
+            <div class="search-container">
+                <form id="searchForm">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm bệnh viện, dịch vụ...">
+                    <button type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
             </div>
-            <div class="dropdown">
-                <span><a href="DICHVUYTE.html" target="_self" data-keywords="medical service healthcare"><b> DỊCH VỤ Y TẾ </b></a></span>
-                <div class="dropdown-content">
-                    <ul class="dropdown">
-                        <li><a href="KHAMSUCKHOE.html" data-keywords="health checkup package"><b>GÓI KHÁM SỨC KHỎE </b></a></li>
-                        <li><a href="THAISAN.html" data-keywords="maternity obstetrics gynecology"><b>THAI SẢN VÀ PHỤ KHOA </b></a></li>
-                        <li><a href="https://benhvienphuongdong.vn/trung-tam-tu-van-tiem-chung-vac-xin/" data-keywords="vaccination center"><b>TRUNG TÂM TƯ
-                                    VẤN VÀ TIÊM CHỦNG VẮC XIN </b></a></li>
-                        <li><a href="https://benhvienphuongdong.vn/dich-vu/goi-can-thiep-tre-cham-phat-trien-ngon-ngu/" data-keywords="rehabilitation therapy"><b>GÓI
-                                    KHÁM PHỤC HỒI CHỨC NĂNG </b></a></li>
-                        <li><a href="https://benhvienphuongdong.vn/trung-tam-cham-soc-suc-khoe-tinh-than/" data-keywords="mental health care"><b>TRUNG TÂM
-                                    CHĂM SÓC SỨC KHỎE TINH THẦN</b></a></li>
-                        <li><a href="BENHNEN.html" data-keywords="chronic disease home care"><b>KHÁM BỆNH NỀN TẠI NHÀ </b></a></li>
-                    </ul>
-                </div>
+            
+            <div class="user-actions">
+                <a href="#" class="btn btn-light">Đăng ký</a>
+                <a href="#" class="btn btn-outline-light">Đăng nhập</a>
             </div>
+        </div>
+    </header>
     
-            <div class="dropdown">
-                <span><a href="#" data-keywords="customer guide help"><b>HƯỚNG DẪN KHÁCH HÀNG</b></a></span>
-                <div class="dropdown-content">
-                    <ul class="dropdown">
-                        <li><a href="changchu.html" data-keywords="book appointment near you schedule"> <b>ĐẶT LỊCH KHÁM GẦN BẠN</b> </a></li>
-                        <li><a href="banggia.html" data-keywords="price list service fee"> <b>BẢNG GIÁ DỊCH VỤ CHUNG</b> </a></li>
-                        <li><a href="TIME.html" data-keywords="working hours schedule"> <b>GIỜ LÀM VIỆC</b> </a> </li>
-                    </ul>
-                </div>
-            </div>
-            <a href="#"  data-keywords="contact support"><b>LIÊN HỆ</b></a>
-</section>
-<!--main container-->
- <div class="container">
- <section class="section">
-        <h2> GÓI KHÁM SỨC KHỎE </h2>
-        <p>
-        <li>
-            <a href="KSK-DN.html"><b>KHÁM SỨC KHỎE DOANH NGHIỆP </b></a>
-        </li>
-        <li><a href="KSK-CANHAN.html"><b>KHÁM SỨC KHỎE CÁ NHÂN </b></a></li>
-        <li><a href="KSK-LAIXE.html"><b>kHÁM SỨC KHỎE LÁI XE </b></a></li>
-        <li><a href="KSK-XINVIEC.html"><b>KHÁM SỨC KHỎE XIN VIỆC </b></a></li>
-        <li><a href="KSK-HONNHAN.html"><b>KHÁM SỨC KHỎE TIỀN HÔN NHÂN </b></a></li>
-        <li><a href="KSK-VIETNGOAI.html"><b>KHÁM SỨC KHỎE CHO NGUỜI VIỆT ĐI NƯỚC NGOÀI </b></a></li>
-        <li><a href="KSK-CAOTUOI.html"><b>KHÁM SỨC KHỎE CHO NGƯỜI CAO TUỔI </b></a></li>
-        </p>
+    <!-- Navigation -->
+    <nav class="navbar-custom">
+        <section>
+            <ul class="nav-links">
+                <li><a href="index.html" data-keywords="home trang chính">TRANG CHỦ</a></li>
+                
+                <li class="dropdown">
+                    <a href="GIOITHIEU.html" data-keywords="introduce about">GIỚI THIỆU</a>
+                    <div class="dropdown-content">
+                        <a href="CHUYENKHOA.html" data-keywords="medical specialty">CHUYÊN KHOA Y TẾ</a>
+                        <a href="CSVC.html" data-keywords="facilities infrastructure">CƠ SỞ VẬT CHẤT</a>
+                    </div>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="DICHVUYTE.html" data-keywords="medical service healthcare">DỊCH VỤ Y TẾ</a>
+                    <div class="dropdown-content">
+                        <a href="KHAMSUCKHOE.html" data-keywords="health checkup package">GÓI KHÁM SỨC KHỎE</a>
+                        <a href="THAISAN.html" data-keywords="maternity obstetrics gynecology">THAI SẢN VÀ PHỤ KHOA</a>
+                        <a href="https://benhvienphuongdong.vn/trung-tam-tu-van-tiem-chung-vac-xin/" data-keywords="vaccination center">TRUNG TÂM TƯ VẤN VÀ TIÊM CHỦNG VẮC XIN</a>
+                        <a href="https://benhvienphuongdong.vn/dich-vu/goi-can-thiep-tre-cham-phat-trien-ngon-ngu/" data-keywords="rehabilitation therapy">GÓI KHÁM PHỤC HỒI CHỨC NĂNG</a>
+                        <a href="https://benhvienphuongdong.vn/trung-tam-cham-soc-suc-khoe-tinh-than/" data-keywords="mental health care">TRUNG TÂM CHĂM SÓC SỨC KHỎE TINH THẦN</a>
+                        <a href="BENHNEN.html" data-keywords="chronic disease home care">KHÁM BỆNH NỀN TẠI NHÀ</a>
+                    </div>
+                </li>
+                
+                <li class="dropdown">
+                    <a href="#" data-keywords="customer guide help">HƯỚNG DẪN KHÁCH HÀNG</a>
+                    <div class="dropdown-content">
+                        <a href="changchu.html" data-keywords="book appointment near you schedule">ĐẶT LỊCH KHÁM GẦN BẠN</a>
+                        <a href="banggia.html" data-keywords="price list service fee">BẢNG GIÁ DỊCH VỤ CHUNG</a>
+                        <a href="TIME.html" data-keywords="working hours schedule">GIỜ LÀM VIỆC</a>
+                    </div>
+                </li>
+                
+                <li><a href="#" data-keywords="contact support">LIÊN HỆ</a></li>
+            </ul>
         </section>
-         </div>
+    </nav>
+    
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>GÓI KHÁM SỨC KHỎE</h1>
+            <p>Lựa chọn gói khám sức khỏe phù hợp với nhu cầu của bạn. Chúng tôi cung cấp các dịch vụ khám tổng quát chất lượng cao với đội ngũ bác sĩ chuyên môn</p>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="container health-packages">
+        <h2 class="section-title">CÁC GÓI KHÁM SỨC KHỎE</h2>
+        
+        <div class="row g-4">
+            <!-- Package 1 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="package-card">
+                    <div class="package-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="package-content">
+                        <h3 class="package-title">KHÁM SỨC KHỎE DOANH NGHIỆP</h3>
+                        <p>Khám sức khỏe định kỳ cho nhân viên với chi phí tối ưu, hỗ trợ doanh nghiệp chăm sóc sức khỏe nhân sự</p>
+                        <a href="KSK-DN.html" class="package-btn">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package 2 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="package-card">
+                    <div class="package-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="package-content">
+                        <h3 class="package-title">KHÁM SỨC KHỎE CÁ NHÂN</h3>
+                        <p>Khám tổng quát cá nhân với các gói từ cơ bản đến nâng cao, phù hợp với nhu cầu và ngân sách của bạn</p>
+                        <a href="KSK-CANHAN.html" class="package-btn">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package 3 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="package-card">
+                    <div class="package-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="package-content">
+                        <h3 class="package-title">KHÁM SỨC KHỎE LÁI XE</h3>
+                        <p>Khám sức khỏe theo quy định của Bộ GTVT, cấp giấy chứng nhận đủ điều kiện sức khỏe lái xe</p>
+                        <a href="KSK-LAIXE.html" class="package-btn">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package 4 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="package-card">
+                    <div class="package-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <div class="package-content">
+                        <h3 class="package-title">KHÁM SỨC KHỎE XIN VIỆC</h3>
+                        <p>Khám sức khỏe theo yêu cầu của nhà tuyển dụng, đáp ứng các tiêu chuẩn sức khỏe nghề nghiệp</p>
+                        <a href="KSK-XINVIEC.html" class="package-btn">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package 5 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="package-card">
+                    <div class="package-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="package-content">
+                        <h3 class="package-title">KHÁM SỨC KHỎE TIỀN HÔN NHÂN</h3>
+                        <p>Tư vấn và khám sức khỏe tiền hôn nhân giúp các cặp đôi chuẩn bị tốt nhất cho cuộc sống hôn nhân</p>
+                        <a href="KSK-HONNHAN.html" class="package-btn">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package 6 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="package-card">
+                    <div class="package-icon">
+                        <i class="fas fa-globe-asia"></i>
+                    </div>
+                    <div class="package-content">
+                        <h3 class="package-title">KHÁM SỨC KHỎE CHO NGƯỜI VIỆT ĐI NƯỚC NGOÀI</h3>
+                        <p>Khám sức khỏe xuất cảnh theo yêu cầu của các quốc gia, đáp ứng đầy đủ thủ tục visa và xuất nhập cảnh</p>
+                        <a href="KSK-VIETNGOAI.html" class="package-btn">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Package 7 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="package-card">
+                    <div class="package-icon">
+                        <i class="fas fa-user-friends"></i>
+                    </div>
+                    <div class="package-content">
+                        <h3 class="package-title">KHÁM SỨC KHỎE CHO NGƯỜI CAO TUỔI</h3>
+                        <p>Gói khám chuyên biệt dành cho người cao tuổi với các xét nghiệm và kiểm tra phù hợp độ tuổi</p>
+                        <a href="KSK-CAOTUOI.html" class="package-btn">Xem chi tiết</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="footer-title">MedBookingBTL</h4>
+                    <p>Hệ thống đặt lịch khám bệnh trực tuyến hàng đầu, kết nối bệnh nhân với các cơ sở y tế uy tín.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <h4 class="footer-title">Liên kết nhanh</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="GIOITHIEU.html">Giới thiệu</a></li>
+                        <li><a href="DICHVUYTE.html">Dịch vụ y tế</a></li>
+                        <li><a href="changchu.html">Đặt lịch khám</a></li>
+                        <li><a href="banggia.html">Bảng giá</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4">
+                    <h4 class="footer-title">Liên hệ</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt me-2"></i> Số 123, đường ABC, Bắc Từ Liêm, Hà Nội</li>
+                        <li><i class="fas fa-phone-alt me-2"></i> (024) 1234 5678</li>
+                        <li><i class="fas fa-envelope me-2"></i> info@medbookingbtl.vn</li>
+                        <li><i class="fas fa-clock me-2"></i> Thứ 2 - Chủ nhật: 7:00 - 20:00</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 MedBookingBTL. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple search functionality
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            alert(`Đang tìm kiếm: "${searchTerm}". Tính năng tìm kiếm chi tiết sẽ được triển khai sau.`);
+            document.getElementById('searchInput').value = '';
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
