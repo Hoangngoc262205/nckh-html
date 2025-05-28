@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bệnh Viện Đa Khoa Sunshine - Đăng Nhập</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            background: #2980b9;
+        }
+        .center {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+        .txt_field {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .txt_field input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            outline: none;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .txt_field input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        .txt_field label {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-size: 1rem;
+            transition: all 0.2s;
+            pointer-events: none;
+        }
+        .txt_field input:focus ~ label,
+        .txt_field input:not(:placeholder-shown) ~ label {
+            top: -0.5rem;
+            left: 0.5rem;
+            font-size: 0.75rem;
+            color: #3b82f6;
+            background-color: white;
+            padding: 0 0.25rem;
+        }
+        .txt_field span {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #3b82f6;
+            transition: width 0.2s;
+        }
+        .txt_field input:focus ~ span {
+            width: 100%;
+        }
+        .pass {
+            text-align: right;
+            margin-bottom: 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        .pass:hover {
+            color: #3b82f6;
+            text-decoration: underline;
+        }
+        input[type="submit"] {
+            background-color: rgb(31, 107, 164);
+            color: white;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.375rem;
+            width: 100%;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        input[type="submit"]:hover {
+            background-color: rgb(25, 90, 140);
+            box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.1);
+        }
+        .signup_link {
+            text-align: center;
+            margin-top: 1rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        .signup_link a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .signup_link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen flex items-center justify-center p-4">
+    <main class="w-full max-w-md mx-auto">
+        <div id="alertContainer" class="hidden mb-4"></div>
+        <div class="center">
+            <h3 class="text-2xl font-bold text-center text-blue-800 mb-6">
+                Đăng nhập tài khoản
+            </h3>
+            <form id="loginForm" method="post" class="space-y-4">
+                <div class="txt_field">
+                    <input type="text" class="form-control" id="loginUsername" required placeholder=" " />
+                    <span></span>
+                    <label for="loginUsername">Tên đăng nhập</label>
+                    <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Vui lòng nhập tên đăng nhập.</div>
+                </div>
+                <div class="txt_field">
+                    <input type="password" class="form-control" id="loginPassword" required placeholder=" " />
+                    <span></span>
+                    <label for="loginPassword">Mật khẩu</label>
+                    <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Vui lòng nhập mật khẩu.</div>
+                </div>
+                <div class="pass">
+                    <a href="#" class="hover:text-blue-600">Quên mật khẩu?</a>
+                </div>
+                <input type="submit" value="Đăng nhập" />
+                <div class="signup_link">
+                    Không có tài khoản? <a href="Dangki.html">Đăng ký ngay</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+$(document).ready(function () {
+    const DB_NAME = 'HospitalDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'patients';
+
+    let db;
+
+    const openDB = () => {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+            request.onupgradeneeded = (event) => {
+                db = event.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                db = event.target.result;
+                resolve(db);
+            };
+
+            request.onerror = (event) => {
+                reject(`Lỗi khi mở cơ sở dữ liệu: ${event.target.error}`);
+            };
+        });
+    };
+
+    const getPatients = () => {
+        return new Promise((resolve, reject) => {
+            const transaction = db.transaction(STORE_NAME, 'readonly');
+            const store = transaction.objectStore(STORE_NAME);
+            const request = store.getAll();
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = (event) => reject(`Lỗi khi lấy danh sách bệnh nhân: ${event.target.error}`);
+        });
+    };
+
+    $('#loginForm').on('submit', async function (e) {
+        e.preventDefault();
+        const submitButton = $(this).find('input[type="submit"]');
+        submitButton.prop('disabled', true);
+
+        try {
+            const username = $('#loginUsername').val().trim();
+            const password = $('#loginPassword').val();
+
+            $('.invalid-feedback').addClass('hidden');
+            if (!username) {
+                $('#loginUsername').nextAll('.invalid-feedback').removeClass('hidden');
+                throw new Error('Vui lòng nhập tên đăng nhập.');
+            }
+            if (!password) {
+                $('#loginPassword').nextAll('.invalid-feedback').removeClass('hidden');
+                throw new Error('Vui lòng nhập mật khẩu.');
+            }
+
+            await openDB();
+            const patients = await getPatients();
+            const user = patients.find(p => p.username === username && p.password === password);
+
+            if (!user) {
+                throw new Error('Tên đăng nhập hoặc mật khẩu không đúng.');
+            }
+
+            $('#alertContainer').html(`
+                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-lg">
+                    Đăng nhập thành công! Chào mừng ${user.fullName}. Chuyển đến trang chủ trong 2 giây...
+                </div>
+            `).removeClass('hidden').slideDown();
+            $('#loginForm')[0].reset();
+            setTimeout(() => {
+                window.location.href = '#';
+            }, 2000);
+        } catch (error) {
+            $('#alertContainer').html(`
+                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
+                    ${error.message}
+                </div>
+            `).removeClass('hidden').slideDown();
+            setTimeout(() => $('#alertContainer').slideUp(() => $(this).addClass('hidden')), 5000);
+        } finally {
+            submitButton.prop('disabled', false);
+        }
+    });
+});
+    </script>
+</body>
+</html>
