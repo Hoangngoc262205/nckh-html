@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bệnh Viện Đa Khoa Sunshine - Đăng Ký Bệnh Nhân</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            background: #2980b9;
+        }
+
+        .buttonCSS {
+            background-color: rgb(31, 107, 164);
+            position: relative;
+            border-radius: 10px;
+            color: white;
+            display: inline;
+            justify-content: center;
+            width: 100%;
+            height: 40px;
+        }
+
+        .buttonCSS span {
+            padding: 15px;
+        }
+
+        .buttonCSS:hover {
+            box-shadow: 0 2px 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            font-size: 23px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 50;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-blue-50 to-gray-100 min-h-screen flex items-center justify-center p-4">
+    <main class="w-full max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <div class="md:flex">
+                <div class="hidden md:block md:w-1/2 bg-blue-100">
+                    <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80"
+                        alt="Hospital Image"
+                        class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300">
+                </div>
+                <div class="w-full md:w-1/2 p-8">
+                    <h2 class="text-3xl font-bold text-center text-blue-800 mb-6">
+                        <i class="fas fa-file-signature mr-2"></i>Đăng Ký Tài Khoản Bệnh Nhân
+                    </h2>
+
+                    <div id="alertContainer" class="hidden mb-4"></div>
+
+                    <form id="registerForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="fullName" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    Họ và tên
+                                </label>
+                                <input type="text" id="fullName"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Vui lòng nhập họ tên hợp
+                                    lệ (ít nhất 5 ký tự).</div>
+                            </div>
+                            <div>
+                                <label for="email" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    Email
+                                </label>
+                                <input type="email" id="email"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Vui lòng nhập email hợp
+                                    lệ.</div>
+                            </div>
+                            <div>
+                                <label for="phone" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    Số điện thoại
+                                </label>
+                                <input type="tel" id="phone" pattern="[0-9]{10}"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Vui lòng nhập số điện
+                                    thoại hợp lệ (10 chữ số).</div>
+                            </div>
+                            <div>
+                                <label for="birthdate" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    Ngày sinh
+                                </label>
+                                <input type="date" id="birthdate"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Vui lòng chọn ngày sinh.
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="address" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                </i>Địa chỉ
+                            </label>
+                            <textarea id="address" rows="3"
+                                class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required></textarea>
+                            <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Vui lòng nhập địa chỉ.</div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="username" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    </i>Tên đăng nhập
+                                </label>
+                                <input type="text" id="username"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Tên đăng nhập phải có
+                                    4-20 ký tự (chữ, số, _).</div>
+                            </div>
+                            <div>
+                                <label for="password" class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    Mật khẩu
+                                </label>
+                                <input type="password" id="password"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Mật khẩu phải có ít nhất
+                                    8 ký tự.</div>
+                            </div>
+                            <div>
+                                <label for="confirmPassword"
+                                    class="flex items-center text-sm font-medium text-gray-700 mb-1">
+                                    Nhập lại mật khẩu
+                                </label>
+                                <input type="password" id="confirmPassword"
+                                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                    required>
+                                <div class="invalid-feedback text-red-500 text-sm mt-1 hidden">Mật khẩu nhập lại không
+                                    khớp.</div>
+                            </div>
+                        </div>
+                        <button type="submit" class="buttonCSS">
+                            <span><i class="fas fa-user-plus mr-2"></i>Đăng ký ngay</span>
+                        </button>
+                    </form>
+                    <a href="/index.html" class="mt-4 inline-block text-blue-600 hover:text-blue-800">
+                        Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="successModal" class="modal">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold text-green-700 mb-4"><i class="fas fa-check-circle mr-2"></i>Đăng ký thành
+                công!</h3>
+            <div id="modalContent" class="text-gray-700"></div>
+            <button id="closeModal" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                <i class="fas fa-times mr-2"></i>Đóng
+            </button>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init("tkUAFMew6Pd2eGOlH");
+        })();
+        const DB_NAME = 'HospitalDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'patients';
+        let db;
+
+        const openDB = () => {
+            return new Promise((resolve, reject) => {
+                const versionRequest = indexedDB.open(DB_NAME);
+
+                versionRequest.onsuccess = (event) => {
+                    const currentVersion = event.target.result.version;
+                    event.target.result.close();
+                    const newVersion = currentVersion + 1;
+                    const request = indexedDB.open(DB_NAME, newVersion);
+
+                    request.onupgradeneeded = (event) => {
+                        db = event.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                        }
+                    };
+
+                    request.onsuccess = (event) => {
+                        db = event.target.result;
+                        if (!db) {
+                            reject('Database not initialized');
+                        }
+                        resolve(db);
+                    };
+
+                    request.onerror = (event) => {
+                        console.error('Error opening database:', event.target.error);
+                        reject(`Lỗi khi mở cơ sở dữ liệu: ${event.target.error}`);
+                    };
+                };
+
+                versionRequest.onerror = (event) => {
+                    console.error('Error getting database version:', event.target.error);
+                    reject(`Lỗi khi lấy phiên bản cơ sở dữ liệu: ${event.target.error}`);
+                };
+            });
+        };
+        const addPatient = (patient) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(STORE_NAME, 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.add(patient);
+
+                request.onsuccess = () => resolve(patient);
+                request.onerror = (event) => reject(`Failed to add patient: ${event.target.error}`);
+            });
+        };
+        const checkDuplicate = async (username, email) => {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(STORE_NAME, 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                request.onsuccess = () => {
+                    const patients = request.result;
+                    const isDuplicate = patients.some(p =>
+                        p.username === username || p.email === email
+                    );
+                    resolve(isDuplicate);
+                };
+                request.onerror = (event) => reject(`Failed to check duplicates: ${event.target.error}`);
+            });
+        };
+        const sendConfirmationEmail = (patientData) => {
+            return emailjs.send("service_ck5ms6c", "template_hk9y8xa", {
+                to_name: patientData.fullName,
+                email: patientData.email,
+                code: `Chúc mừng bạn đã đăng ký tài khoản thành công với Mã bệnh nhân: ${patientData.id}`
+            });
+        };
+        $(document).ready(function () {
+            $('#registerForm').on('submit', async function (e) {
+                e.preventDefault();
+                const submitButton = $(this).find('button[type="submit"]');
+                submitButton.prop('disabled', true);
+                $('#alertContainer').addClass('hidden').empty();
+                try {
+                    const formData = {
+                        fullName: $('#fullName').val().trim(),
+                        email: $('#email').val().trim(),
+                        phone: $('#phone').val().trim(),
+                        birthdate: $('#birthdate').val(),
+                        address: $('#address').val().trim(),
+                        username: $('#username').val().trim(),
+                        password: $('#password').val(),
+                        id: `BN-${Date.now().toString(36).toUpperCase()}`,
+                        createdAt: new Date().toISOString(),
+                        updatedAt: new Date().toISOString(),
+                        status: 'active'
+                    };
+                    const validations = {
+                        fullName: formData.fullName.length >= 5,
+                        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email),
+                        phone: /^(0|\+84)[1-9][0-9]{8}$/.test(formData.phone),
+                        password: $('#password').val().length >= 8,
+                        confirmPassword: $('#password').val() === $('#confirmPassword').val(),
+                        username: /^[a-zA-Z0-9_]{4,20}$/.test(formData.username)
+                    };
+                    $('.invalid-feedback').addClass('hidden');
+                    let isValid = true;
+                    Object.entries(validations).forEach(([field, valid]) => {
+                        if (!valid) {
+                            $(`#${field}`).next('.invalid-feedback').removeClass('hidden');
+                            isValid = false;
+                        }
+                    });
+                    if (!isValid) throw new Error('Vui lòng kiểm tra lại thông tin nhập vào');
+                    await openDB();
+                    const isDuplicate = await checkDuplicate(formData.username, formData.email);
+                    if (isDuplicate) throw new Error('Tên đăng nhập hoặc email đã được sử dụng');
+                    const savedPatient = await addPatient(formData);
+                    console.log('Patient saved to DB:', savedPatient);
+                    try {
+                        await sendConfirmationEmail(formData);
+                        console.log('Confirmation email sent');
+                    } catch (emailError) {
+                        console.warn('Email sending failed:', emailError);
+                    }
+                    $('#modalContent').html(`
+                    <div class="mb-4">
+                        <h4 class="font-bold text-lg">Đăng ký thành công!</h4>
+                        <p class="mt-2">Mã bệnh nhân: <span class="font-semibold">${formData.id}</span></p>
+                        <p>Tên đăng nhập: <span class="font-semibold">${formData.username}</span></p>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Vui lòng kiểm tra email ${formData.email} để xem thông tin chi tiết
+                    </div>
+                `);
+                    $('#successModal').fadeIn();
+                    setTimeout(() => {
+                        $('#registerForm')[0].reset();
+                        window.location.href = 'Dangnhap.html';
+                    }, 3000);
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    $('#alertContainer').html(`
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        ${error.message || 'Đã xảy ra lỗi trong quá trình đăng ký'}
+                    </div>
+                `).removeClass('hidden');
+                } finally {
+                    submitButton.prop('disabled', false);
+                }
+            });
+            $('#closeModal, #successModal').on('click', function (e) {
+                if (e.target === this) {
+                    $('#successModal').fadeOut();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
